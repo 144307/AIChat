@@ -12,17 +12,28 @@ function Chat() {
   const anchorRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
   const [input, setInput] = useState("");
-  const inputRef = useRef(null);
+  const inputRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }, []);
 
   useEffect(() => {
     anchorRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messageStore]);
 
   useEffect(() => {
-    if (isLoading) {
-      inputRef.current.contentEditable = false;
+    console.log(isLoading);
+    if (inputRef.current) {
+      if (isLoading) {
+        inputRef.current.contentEditable = "false";
+      } else {
+        inputRef.current.contentEditable = "true";
+      }
     } else {
-      inputRef.current.contentEditable = true;
+      console.log("inputRef.current doesn't exist");
     }
   }, [isLoading]);
 
@@ -53,7 +64,6 @@ function Chat() {
   return (
     <div className="chat">
       <div ref={messagesListRef} className="chat__message-list">
-        {/* {messages.map((message, i) => { */}
         {messageStore.messages.map((message, i) => {
           return (
             <div key={`message_${i}`} className="message">
@@ -73,13 +83,19 @@ function Chat() {
         <div
           ref={inputRef}
           id="input"
+          autoFocus
           contentEditable
           className={`chat__input${isLoading ? " chat__input_inactive" : ""}`}
-          onInput={(e) => {
-            if (e.currentTarget.textContent) {
-              setInput(e.currentTarget.textContent);
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              sendTestMessage();
             } else {
-              setInput("");
+              // console.log("input");
+              if (e.currentTarget.textContent) {
+                setInput(e.currentTarget.textContent);
+              } else {
+                setInput("");
+              }
             }
           }}
         ></div>
@@ -87,8 +103,6 @@ function Chat() {
           {">"}
         </button>
       </div>
-      {isLoading}
-      {/* <div className="test-block">{messageStore.modelName}</div> */}
     </div>
   );
 }

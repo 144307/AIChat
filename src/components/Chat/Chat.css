@@ -64,13 +64,20 @@
   /* line-height: 150%; */
 }
 
+.chat__input:hover {
+  background-color: white;
+}
+
+.chat__input:focus {
+  outline: 3px solid rgb(116, 116, 255);
+}
+
 .chat__input_inactive {
   background-color: #999;
 }
 
-.chat__input:hover,
-.chat__input:focus {
-  background-color: white;
+.chat__input_inactive:hover {
+  background-color: #999;
 }
 
 .send-button {

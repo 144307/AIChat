@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { sendTextMessage } from "../../features/thunks/chatThunk";
 import { AppDispatch } from "../../store";
+import { addMessageToEnd } from "./chatSlice";
 
 function Chat() {
   const messageStore = useSelector((state: rootStore) => state.messages);
@@ -11,13 +12,13 @@ function Chat() {
   const [isLoading, setIsLoading] = useState(false);
   const anchorRef = useRef<HTMLDivElement>(null);
   const messagesListRef = useRef<HTMLDivElement>(null);
-  const [input, setInput] = useState("");
+  const [input, setInput] = useState(
+    "Niko the kobold stalked carefully down the alley, his small scaly figure obscured by a dusky cloak that fluttered lightly in the cold winter breeze."
+  );
   const inputRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (inputRef.current) {
-      inputRef.current.focus();
-    }
+    setFocus();
   }, []);
 
   useEffect(() => {
@@ -25,7 +26,6 @@ function Chat() {
   }, [messageStore]);
 
   useEffect(() => {
-    console.log(isLoading);
     if (inputRef.current) {
       if (isLoading) {
         inputRef.current.contentEditable = "false";
@@ -43,8 +43,16 @@ function Chat() {
     }
   }, [input]);
 
-  async function sendTestMessage() {
+  function setFocus() {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
+  }
+
+  async function sendMessage() {
     if (!isLoading && input.length > 0) {
+      dispatch(addMessageToEnd(input));
+      setInput("");
       setIsLoading(true);
       try {
         await dispatch(
@@ -54,7 +62,6 @@ function Chat() {
         );
       } finally {
         setIsLoading(false);
-        setInput("");
       }
     } else {
       console.log("Double click protection");
@@ -66,8 +73,8 @@ function Chat() {
       <div ref={messagesListRef} className="chat__message-list">
         {messageStore.messages.map((message, i) => {
           return (
-            <div key={`message_${i}`} className="message">
-              {message.map((paragraph, j) => {
+            <div key={`message_${i}`} className={`message`}>
+              {message.text.map((paragraph, j) => {
                 return (
                   <p key={`paragraph_${i}_${j}`} className="message__paragraph">
                     {paragraph}
@@ -86,20 +93,20 @@ function Chat() {
           autoFocus
           contentEditable
           className={`chat__input${isLoading ? " chat__input_inactive" : ""}`}
+          onInput={(e) => {
+            if (e.currentTarget.textContent) {
+              setInput(e.currentTarget.textContent);
+            } else {
+              setInput("");
+            }
+          }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              sendTestMessage();
-            } else {
-              // console.log("input");
-              if (e.currentTarget.textContent) {
-                setInput(e.currentTarget.textContent);
-              } else {
-                setInput("");
-              }
+              sendMessage();
             }
           }}
         ></div>
-        <button className="send-button" onClick={sendTestMessage}>
+        <button className="send-button" onClick={sendMessage}>
           {">"}
         </button>
       </div>

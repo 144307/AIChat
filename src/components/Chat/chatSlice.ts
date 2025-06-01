@@ -11,22 +11,23 @@ const chatSlice = createSlice({
   initialState: initialState,
   reducers: {
     addMessageToEnd: (state, action) => {
-      if (!Array.isArray(state.messages) || state.messages.length === 0) {
-        console.log("empty or not array");
-        // return {
-        //   ...state,
-        //   messages: [...state.messages.slice(0, -1), [action.payload]],
-        // };
+      if (!Array.isArray(state.messages)) {
+        console.log("New message is not array");
+        return state;
       }
-      // console.log("action", action.payload);
+      // state.messages.push({ text: [action.payload], type: "test type" });
       return {
         ...state,
-        messages: [...state.messages, [action.payload]],
+        messages: [
+          ...state.messages,
+          { text: [action.payload], type: "test type" },
+        ],
       };
     },
     updateLastMessage: (state, action) => {
       const lastMessageIndex = state.messages.length - 1;
-      const lastParagraphIndex = state.messages[lastMessageIndex].length - 1;
+      const lastParagraphIndex =
+        state.messages[lastMessageIndex].text.length - 1;
       const lastMessage = state.messages[lastMessageIndex];
 
       if (action.payload.includes("\n\n")) {
@@ -35,11 +36,14 @@ const chatSlice = createSlice({
           ...state,
           messages: [
             ...state.messages.slice(0, lastMessageIndex),
-            [
-              ...lastMessage.slice(0, lastParagraphIndex),
-              lastMessage[lastParagraphIndex] + splittedLine[0],
-              splittedLine[1],
-            ],
+            {
+              text: [
+                ...lastMessage.text.slice(0, lastParagraphIndex),
+                lastMessage.text[lastParagraphIndex] + splittedLine[0],
+                splittedLine[1],
+              ],
+              type: "test type 2",
+            },
           ],
         };
 
@@ -48,15 +52,20 @@ const chatSlice = createSlice({
         // state.messages[lastMessageIndex][lastParagraphIndex + 1] +=
         //   splittedLine[1];
       } else {
-        // console.log(action.payload);
         return {
           ...state,
           messages: [
             ...state.messages.slice(0, lastMessageIndex),
-            [
-              ...state.messages[lastMessageIndex].slice(0, lastParagraphIndex),
-              lastMessage[lastParagraphIndex] + action.payload,
-            ],
+            {
+              text: [
+                ...state.messages[lastMessageIndex].text.slice(
+                  0,
+                  lastParagraphIndex
+                ),
+                lastMessage.text[lastParagraphIndex] + action.payload,
+              ],
+              type: "test type 3",
+            },
           ],
         };
       }

@@ -1,3 +1,7 @@
+*[contenteditable]:empty:before {
+  content: "\feff"; /* ZERO WIDTH NO-BREAK SPACE */
+}
+
 .chat {
   height: 100%;
   padding: 16px;
@@ -34,6 +38,10 @@
   line-height: 150%;
 }
 
+.message_user {
+  padding-left: 16px;
+}
+
 .message__paragraph {
 }
 
@@ -61,7 +69,7 @@
   background-color: #f5f5f5;
   outline: 0;
   /* resize: none; */
-  /* line-height: 150%; */
+  line-height: 150%;
 }
 
 .chat__input:hover {

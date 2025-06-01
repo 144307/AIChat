@@ -1,25 +1,12 @@
 // import { Dispatch, SetStateAction } from "react";
 
-const baseURL = "http://localhost:3000";
-// const baseURL = "http://localhost:5001";
+// const baseURL = "http://localhost:3000";
+const baseURL = "http://localhost:5001";
 
 interface DataArray {
   token: string;
   finish_reason: string;
 }
-
-// function replaceLastItem(
-//   // replace last item in array state
-//   setState: Dispatch<SetStateAction<string[][]>>,
-//   newItem: string[]
-// ) {
-//   setState((state) => {
-//     if (!Array.isArray(state) || state.length === 0) {
-//       return state;
-//     }
-//     return [...state.slice(0, -1), newItem];
-//   });
-// }
 
 function getBody(message: string) {
   const body = {
@@ -69,7 +56,7 @@ async function* parseSSE(stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {
 
 export async function generateStream(
   message: string,
-  callback: (line: string) => void,
+  updateLastMessage: (line: string) => void,
   addMessage: (line: string) => void
 ) {
   const url = baseURL + "/api/extra/generate/stream";
@@ -83,19 +70,21 @@ export async function generateStream(
     body: JSON.stringify(getBody(message)),
   });
 
-  for await (const chunk of parseSSE(response.body)) {
-    const line: DataArray = JSON.parse(chunk);
-    if (isFirstMessage) {
-      // console.log("first message");
-      // callback(line.token);
-      addMessage(line.token);
-      isFirstMessage = false;
-    } else {
-      callback(line.token);
+  if (response.body) {
+    for await (const chunk of parseSSE(response.body)) {
+      const line: DataArray = JSON.parse(chunk);
+      if (isFirstMessage) {
+        addMessage(line.token);
+        isFirstMessage = false;
+      } else {
+        updateLastMessage(line.token);
+      }
     }
-  }
 
-  if (!response.ok) {
-    throw new Error(`Request Error ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Request Error ${response.status}`);
+    }
+  } else {
+    throw new Error("response.body is empty");
   }
 }

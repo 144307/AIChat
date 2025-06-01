@@ -51,7 +51,7 @@ function Chat() {
 
   async function sendMessage() {
     if (!isLoading && input.length > 0) {
-      dispatch(addMessageToEnd(input));
+      dispatch(addMessageToEnd({ text: input, type: "user" }));
       setInput("");
       setIsLoading(true);
       try {
@@ -73,7 +73,10 @@ function Chat() {
       <div ref={messagesListRef} className="chat__message-list">
         {messageStore.messages.map((message, i) => {
           return (
-            <div key={`message_${i}`} className={`message`}>
+            <div
+              key={`message_${i}`}
+              className={`message ${message.type === "user" && "message_user"}`}
+            >
               {message.text.map((paragraph, j) => {
                 return (
                   <p key={`paragraph_${i}_${j}`} className="message__paragraph">

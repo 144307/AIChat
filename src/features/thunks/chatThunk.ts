@@ -22,11 +22,11 @@ export const sendTextMessage = createAsyncThunk<void, sendTextMessageArgs>(
       await generateStream(
         message,
         (line) => {
-          thunkAPI.dispatch(updateLastMessage(line));
+          thunkAPI.dispatch(updateLastMessage({ text: line, type: "bot" }));
         },
         (line) => {
           // console.log("addMessage", line);
-          thunkAPI.dispatch(addMessageToEnd(line));
+          thunkAPI.dispatch(addMessageToEnd({ text: line, type: "bot" }));
         }
       );
     } catch (e) {

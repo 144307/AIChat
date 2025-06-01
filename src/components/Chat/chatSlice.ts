@@ -20,7 +20,7 @@ const chatSlice = createSlice({
         ...state,
         messages: [
           ...state.messages,
-          { text: [action.payload], type: "test type" },
+          { text: [action.payload.text], type: action.payload.type },
         ],
       };
     },
@@ -30,8 +30,8 @@ const chatSlice = createSlice({
         state.messages[lastMessageIndex].text.length - 1;
       const lastMessage = state.messages[lastMessageIndex];
 
-      if (action.payload.includes("\n\n")) {
-        const splittedLine = action.payload.split("\n\n");
+      if (action.payload.text.includes("\n\n")) {
+        const splittedLine = action.payload.text.split("\n\n");
         return {
           ...state,
           messages: [
@@ -42,7 +42,7 @@ const chatSlice = createSlice({
                 lastMessage.text[lastParagraphIndex] + splittedLine[0],
                 splittedLine[1],
               ],
-              type: "test type 2",
+              type: action.payload.type,
             },
           ],
         };
@@ -62,9 +62,9 @@ const chatSlice = createSlice({
                   0,
                   lastParagraphIndex
                 ),
-                lastMessage.text[lastParagraphIndex] + action.payload,
+                lastMessage.text[lastParagraphIndex] + action.payload.text,
               ],
-              type: "test type 3",
+              type: action.payload.type,
             },
           ],
         };

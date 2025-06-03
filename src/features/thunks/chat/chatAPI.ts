@@ -1,7 +1,7 @@
 // import { Dispatch, SetStateAction } from "react";
 
-// const baseURL = "http://localhost:3000";
-const baseURL = "http://localhost:5001";
+const baseURL = "http://localhost:3000";
+// const baseURL = "http://localhost:5001";
 
 interface DataArray {
   token: string;
@@ -39,7 +39,6 @@ async function* parseSSE(stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {
     buffer += decoder.decode(value, { stream: true });
     const lines = buffer.split("\n");
 
-    // check what it does exactly
     // const line = lines.pop();
     // if (line) {
     //   buffer = line;
@@ -52,6 +51,21 @@ async function* parseSSE(stream: ReadableStream<Uint8Array<ArrayBufferLike>>) {
       }
     }
   }
+}
+
+export async function abortGeneration() {
+  console.log("abort generation");
+  const url = baseURL + "/api/extra/abort";
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).catch((e) => {
+    throw new Error(`Stop error: ${e}`);
+  });
+  const data = await response.json();
+  return data.success;
 }
 
 export async function generateStream(

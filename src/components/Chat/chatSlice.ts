@@ -1,6 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { chatMessages } from "../../types";
-import { sendTextMessage } from "../../features/thunks/chatThunk";
+import {
+  sendTextMessage,
+  stopGeneration,
+} from "../../features/thunks/chatThunk";
+// import { abortGeneration } from "../../features/thunks/chat/chatAPI";
 
 const initialState: chatMessages = {
   messages: [],
@@ -81,6 +85,12 @@ const chatSlice = createSlice({
       })
       .addCase(sendTextMessage.fulfilled, () => {
         console.log("fulfilled");
+      })
+      .addCase(stopGeneration.pending, () => {
+        console.log("Generation stopping");
+      })
+      .addCase(stopGeneration.fulfilled, () => {
+        console.log("Generation stopped");
       });
   },
 });

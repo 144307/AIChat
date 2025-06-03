@@ -2,7 +2,10 @@ import "./Chat.css";
 import { rootStore } from "../../types";
 import { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { sendTextMessage } from "../../features/thunks/chatThunk";
+import {
+  sendTextMessage,
+  stopGeneration,
+} from "../../features/thunks/chatThunk";
 import { AppDispatch } from "../../store";
 import { addMessageToEnd } from "./chatSlice";
 
@@ -49,7 +52,7 @@ function Chat() {
     }
   }
 
-  async function sendMessage() {
+  async function handleSend() {
     if (!isLoading && input.length > 0) {
       dispatch(addMessageToEnd({ text: input, type: "user" }));
       setInput("");
@@ -63,10 +66,13 @@ function Chat() {
       } finally {
         setIsLoading(false);
       }
-    } else {
-      console.log("Double click protection");
+    } else if (isLoading) {
+      dispatch(stopGeneration());
+      // console.log("Double click protection");
     }
   }
+
+  // const handleSend = debounce(sendMessage);
 
   return (
     <div className="chat">
@@ -105,11 +111,11 @@ function Chat() {
           }}
           onKeyDown={(e) => {
             if (e.key === "Enter") {
-              sendMessage();
+              handleSend();
             }
           }}
         ></div>
-        <button className="send-button" onClick={sendMessage}>
+        <button className="send-button" onClick={handleSend}>
           {">"}
         </button>
       </div>

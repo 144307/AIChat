@@ -81,16 +81,16 @@ const chatSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(sendTextMessage.pending, () => {
-        console.log("pending");
+        // console.log("pending");
       })
       .addCase(sendTextMessage.fulfilled, () => {
-        console.log("fulfilled");
+        // console.log("fulfilled");
       })
       .addCase(stopGeneration.pending, () => {
-        console.log("Generation stopping");
+        // console.log("Generation stopping");
       })
       .addCase(stopGeneration.fulfilled, () => {
-        console.log("Generation stopped");
+        // console.log("Generation stopped");
       });
   },
 });

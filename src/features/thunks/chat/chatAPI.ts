@@ -73,6 +73,7 @@ export async function generateStream(
   updateLastMessage: (line: string) => void,
   addMessage: (line: string) => void
 ) {
+  console.log(" generate");
   const url = baseURL + "/api/extra/generate/stream";
   let isFirstMessage = true;
   const response = await fetch(url, {

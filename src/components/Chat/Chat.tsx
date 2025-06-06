@@ -8,6 +8,7 @@ import {
 } from "../../features/thunks/chatThunk";
 import { AppDispatch } from "../../store";
 import { addMessageToEnd } from "./chatSlice";
+import useThrottle from "../../features/hooks/useThrottle";
 
 function Chat() {
   const messageStore = useSelector((state: rootStore) => state.messages);
@@ -18,7 +19,7 @@ function Chat() {
   const [input, setInput] = useState(
     "Niko the kobold stalked carefully down the alley, his small scaly figure obscured by a dusky cloak that fluttered lightly in the cold winter breeze."
   );
-  const inputRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     setFocus();
@@ -31,9 +32,11 @@ function Chat() {
   useEffect(() => {
     if (inputRef.current) {
       if (isLoading) {
-        inputRef.current.contentEditable = "false";
+        // inputRef.current.contentEditable = "false";
+        inputRef.current.disabled = true;
       } else {
-        inputRef.current.contentEditable = "true";
+        inputRef.current.disabled = false;
+        // inputRef.current.contentEditable = "true";
       }
     } else {
       console.log("inputRef.current doesn't exist");
@@ -41,10 +44,28 @@ function Chat() {
   }, [isLoading]);
 
   useEffect(() => {
-    if (inputRef.current && inputRef.current.textContent !== input) {
-      inputRef.current.textContent = input;
+    if (inputRef.current && inputRef.current.value !== input) {
+      inputRef.current.value = input;
     }
+    inputRef.current.style.height = "";
+    inputRef.current.style.height = inputRef.current?.scrollHeight + "px";
   }, [input]);
+
+  // function throttle(callback: (...args: unknown[]) => void, delay = 5000) {
+  //   let isWaiting = false;
+  //   return function (...args: unknown[]) {
+  //     if (isWaiting) {
+  //       return;
+  //     }
+
+  //     callback(...args);
+  //     isWaiting = true;
+
+  //     setTimeout(() => {
+  //       isWaiting = false;
+  //     }, delay);
+  //   };
+  // }
 
   function setFocus() {
     if (inputRef.current) {
@@ -52,8 +73,10 @@ function Chat() {
     }
   }
 
-  async function handleSend() {
+  const throttledSend = useThrottle(async () => {
+    console.log("sendMessage");
     if (!isLoading && input.length > 0) {
+      console.log("send message", input);
       dispatch(addMessageToEnd({ text: input, type: "user" }));
       setInput("");
       setIsLoading(true);
@@ -65,14 +88,18 @@ function Chat() {
         );
       } finally {
         setIsLoading(false);
+        setFocus();
       }
     } else if (isLoading) {
       dispatch(stopGeneration());
       // console.log("Double click protection");
     }
-  }
+  });
 
-  // const handleSend = debounce(sendMessage);
+  // const handleSend = throttle(sendMessage);
+  const handleSend = () => {
+    throttledSend();
+  };
 
   return (
     <div className="chat">
@@ -96,15 +123,15 @@ function Chat() {
         <div ref={anchorRef}></div>
       </div>
       <div className="input-wrapper">
-        <div
+        <textarea
           ref={inputRef}
           id="input"
           autoFocus
           contentEditable
           className={`chat__input${isLoading ? " chat__input_inactive" : ""}`}
           onInput={(e) => {
-            if (e.currentTarget.textContent) {
-              setInput(e.currentTarget.textContent);
+            if (e.currentTarget.value) {
+              setInput(e.currentTarget.value);
             } else {
               setInput("");
             }
@@ -114,9 +141,9 @@ function Chat() {
               handleSend();
             }
           }}
-        ></div>
+        ></textarea>
         <button className="send-button" onClick={handleSend}>
-          {">"}
+          {`${isLoading ? "S" : ">"}`}
         </button>
       </div>
     </div>

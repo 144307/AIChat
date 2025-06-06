@@ -18,7 +18,7 @@ interface sendTextMessageArgs {
 export const stopGeneration = createAsyncThunk(
   "chat/stopGeneration",
   async (_, thunkAPI) => {
-    console.log("thunk stop");
+    // console.log("thunk stop");
     try {
       // abortGeneration().then((response) => {
       //   console.log("response", response);

@@ -1,12 +1,10 @@
 .section {
-  /* max-height: 100vh; */
   height: 100%;
+  width: 33%;
+  max-width: 600px;
   display: flex;
   flex-direction: column;
-  /* overflow: auto; */
-
   box-sizing: border-box;
-  /* border: 2px solid red; */
 }
 
 .section__header {
@@ -16,7 +14,3 @@
   font-weight: 600;
   line-height: 52px;
 }
-
-/* .section__children {
-  flex: 1;
-} */
